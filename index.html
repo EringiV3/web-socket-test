@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>WebSocket Sample</title>
+    <script
+      src="https://code.jquery.com/jquery-3.4.0.min.js"
+      integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg="
+      crossorigin="anonymous"
+    ></script>
+    <script type="text/javascript">
+      // 接続先URI
+      var uri = "ws://localhost:8080";
+
+      // WebSocketオブジェクト
+      var webSocket = null;
+
+      // 初期処理
+      function init() {
+        // 接続
+        open();
+      }
+
+      // 接続
+      function open() {
+        if (webSocket == null) {
+          // WebSocket の初期化
+          webSocket = new WebSocket(uri);
+          // イベントハンドラの設定
+          webSocket.onopen = onOpen;
+          webSocket.onmessage = onMessage;
+          webSocket.onclose = onClose;
+          webSocket.onerror = onError;
+        }
+      }
+
+      // 接続が開かれたときに呼び出されるイベントリスナー
+      function onOpen(event) {
+        console.log("接続が確立しました\n");
+      }
+
+      // サーバーからメッセージを受信したときに呼び出されるイベントリスナー
+      function onMessage(event) {
+        var msg = JSON.parse(event.data); // event.data で受信したデータにアクセス
+        console.log(msg.name);
+      }
+
+      // エラーが発生したときに呼び出されるイベントリスナー
+      function onError(event) {
+        console.log("接続が確立しました\n");
+      }
+
+      // 接続が閉じられたときに呼び出されるイベントリスナー
+      function onClose(event) {
+        console.log("接続が閉じられました\n");
+        webSocket = null;
+        setTimeout("open()", 3000);
+      }
+
+      // submitされたときに実行されるようにする
+      function sendAnswer() {
+        // クライアントからサーバへ送信するデータ（JSON）
+        var msg = {
+          type: "message",
+          text: "text",
+          id: "clientID",
+          date: Date.now()
+        };
+        webSocket.send(JSON.stringify(msg));
+      }
+
+      // 初期処理登録
+      $(init);
+
+      var myfunc = function() {
+      sendAnswer();
+    };
+    </script>
+  </head>
+
+  <body>
+    <input type="button" value="Check" onclick="myfunc()">
+  </body>
+</html>
